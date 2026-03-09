@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Smart Crop Doctor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Crop Doctor | Advanced Plant Care</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,10 +14,11 @@
     <header>
         <div class="logo">🌾 Smart Crop Doctor</div>
         <nav>
-            <a href="#">Home</a>
-            <a href="#">About</a>
-            <a href="#">Features</a>
-            <a href="#">Contact</a>
+            <a href="index.html">Home</a>
+            <a href="index.html#crops">Crops</a>
+            <a href="index.html#diseases">Diseases</a>
+            <a href="login.html" class="nav-btn login-btn-nav">Login</a>
+            <a href="register.html" class="nav-btn register-btn-nav">Register</a>
         </nav>
     </header>
 
@@ -49,6 +53,96 @@
             </div>
         </div>
     </section>
+
+    <!-- Crop Information Section -->
+    <section class="info-section crop-info" id="crops">
+        <h2 class="section-title">Essential Crop Knowledge</h2>
+        <p class="section-subtitle">Understand the fundamental crop seasons and their requirements.</p>
+        <div class="grid-container">
+            <div class="info-card fade-in">
+                <div class="card-icon">🌾</div>
+                <h3>Kharif Crops</h3>
+                <p><strong>Season:</strong> Monsoon (July - October)</p>
+                <p>Require warm, wet weather. Major crops include Rice, Maize, Sorghum, Pearl Millet/Bajra, Finger Millet/Ragi (cereals), Arhar (pulses), Soyabean.</p>
+            </div>
+            <div class="info-card fade-in">
+                <div class="card-icon">🌱</div>
+                <h3>Rabi Crops</h3>
+                <p><strong>Season:</strong> Winter (October - March)</p>
+                <p>Need cold weather for growth and warm weather for seed maturation. Key crops are Wheat, Barley, Oats (cereals), Chickpea/Gram (pulses), Linseed, Mustard.</p>
+            </div>
+            <div class="info-card fade-in">
+                <div class="card-icon">🍉</div>
+                <h3>Zaid Crops</h3>
+                <p><strong>Season:</strong> Summer (March - June)</p>
+                <p>Grown in the short season between Kharif and Rabi. These require warm, dry weather and a longer day length for flowering. Examples: Watermelon, Cucumber, Bitter Gourd.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Common Diseases Section -->
+    <section class="info-section diseases-info" id="diseases">
+        <h2 class="section-title">Common Crop Diseases</h2>
+        <p class="section-subtitle">Identify and treat devastating plant diseases before they spread.</p>
+        <div class="grid-container">
+            <div class="disease-card fade-in">
+                <div class="disease-img red-gradient"></div>
+                <div class="disease-content">
+                    <h3>Leaf Blight</h3>
+                    <p class="disease-cause"><strong>Cause:</strong> Fungal or Bacterial pathogens</p>
+                    <p>Characterized by rapid browning and dying of plant tissue. Often thrives in warm, wet conditions.</p>
+                    <span class="treatment-badge">Fungicide Treatment</span>
+                </div>
+            </div>
+            <div class="disease-card fade-in">
+                <div class="disease-img orange-gradient"></div>
+                <div class="disease-content">
+                    <h3>Powdery Mildew</h3>
+                    <p class="disease-cause"><strong>Cause:</strong> Fungal spores</p>
+                    <p>Appears as white, powdery spots on leaves and stems. Can severely reduce crop yield by inhibiting photosynthesis.</p>
+                    <span class="treatment-badge">Sulfur Sprays</span>
+                </div>
+            </div>
+            <div class="disease-card fade-in">
+                <div class="disease-img brown-gradient"></div>
+                <div class="disease-content">
+                    <h3>Rust</h3>
+                    <p class="disease-cause"><strong>Cause:</strong> Pucciniales Fungi</p>
+                    <p>Identified by rust-colored spores on lower leaf surfaces. Extremely damaging to cereal crops like wheat.</p>
+                    <span class="treatment-badge">Crop Rotation</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agriculture Best Practices -->
+    <section class="info-section best-practices" id="practices">
+        <h2 class="section-title">Modern Farming Practices</h2>
+        <div class="practices-container">
+            <div class="practice-item fade-in">
+                <div class="practice-icon">💧</div>
+                <div class="practice-text">
+                    <h3>Precision Irrigation</h3>
+                    <p>Utilize drip or sprinkler systems to minimize water waste and deliver moisture directly to the root zone, improving water efficiency by over 30%.</p>
+                </div>
+            </div>
+            <div class="practice-item fade-in">
+                <div class="practice-icon">🌍</div>
+                <div class="practice-text">
+                    <h3>Soil Conservation</h3>
+                    <p>Adopt cover cropping and no-till farming to prevent soil erosion, retain moisture, and build healthy soil organic matter essential for resilience.</p>
+                </div>
+            </div>
+            <div class="practice-item fade-in">
+                <div class="practice-icon">🌿</div>
+                <div class="practice-text">
+                    <h3>Integrated Pest Management (IPM)</h3>
+                    <p>Combine biological, cultural, physical, and chemical tools in a way that minimizes economic, health, and environmental risks while suppressing pests.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
 
     <!-- Footer -->
     <footer>
