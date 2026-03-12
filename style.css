@@ -30,7 +30,11 @@ body {
     overflow-x: hidden;
 }
 
-h1, h2, h3, h4, .logo {
+h1,
+h2,
+h3,
+h4,
+.logo {
     font-family: 'Outfit', sans-serif;
 }
 
@@ -47,8 +51,8 @@ header {
     width: 100%;
     top: 0;
     z-index: 1000;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    border-bottom: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 header .logo {
@@ -138,8 +142,15 @@ nav a:not(.nav-btn):hover::after {
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .hero h1 {
@@ -147,7 +158,7 @@ nav a:not(.nav-btn):hover::after {
     font-weight: 700;
     margin-bottom: 24px;
     line-height: 1.1;
-    text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .hero p {
@@ -167,7 +178,7 @@ nav a:not(.nav-btn):hover::after {
     border: none;
     cursor: pointer;
     border-radius: 50px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     transition: var(--transition);
     display: inline-flex;
     align-items: center;
@@ -176,7 +187,7 @@ nav a:not(.nav-btn):hover::after {
 
 .hero button:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     background-color: #f0fdf4;
 }
 
@@ -221,7 +232,7 @@ nav a:not(.nav-btn):hover::after {
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
-    border: 1px solid rgba(0,0,0,0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     text-align: center;
 }
 
@@ -330,7 +341,7 @@ nav a:not(.nav-btn):hover::after {
     box-shadow: var(--shadow-md);
     text-align: left;
     transition: var(--transition);
-    border: 1px solid rgba(0,0,0,0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .disease-card:hover {
@@ -343,9 +354,17 @@ nav a:not(.nav-btn):hover::after {
     width: 100%;
 }
 
-.red-gradient { background: linear-gradient(135deg, #fca5a5, #ef4444); }
-.orange-gradient { background: linear-gradient(135deg, #fcd34d, #f59e0b); }
-.brown-gradient { background: linear-gradient(135deg, #fdba74, #ea580c); }
+.red-gradient {
+    background: linear-gradient(135deg, #fca5a5, #ef4444);
+}
+
+.orange-gradient {
+    background: linear-gradient(135deg, #fcd34d, #f59e0b);
+}
+
+.brown-gradient {
+    background: linear-gradient(135deg, #fdba74, #ea580c);
+}
 
 .disease-content {
     padding: 30px;
@@ -433,6 +452,276 @@ nav a:not(.nav-btn):hover::after {
     color: var(--text-muted);
 }
 
+/* Upload Modal Styles */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background: var(--surface-color);
+    width: 90%;
+    max-width: 500px;
+    border-radius: var(--border-radius-lg);
+    padding: 40px;
+    position: relative;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    transform: scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
+
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.close-modal:hover {
+    color: var(--text-main);
+    transform: rotate(90deg);
+}
+
+.modal-content h2 {
+    color: var(--primary-dark);
+    margin-bottom: 10px;
+}
+
+.modal-content>p {
+    color: var(--text-muted);
+    margin-bottom: 30px;
+}
+
+.upload-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.upload-option-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 16px;
+    border: 2px dashed #cbd5e1;
+    border-radius: var(--border-radius-md);
+    background: #f8fafc;
+    color: var(--text-main);
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+}
+
+.upload-option-btn:hover {
+    border-color: var(--primary-light);
+    background: #f0fdf4;
+    color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.file-label {
+    margin: 0;
+}
+
+.btn-icon {
+    font-size: 1.5rem;
+}
+
+.divider {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    position: relative;
+    margin: 10px 0;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+.camera-container,
+.preview-container {
+    margin-top: 20px;
+    animation: fadeIn 0.4s ease;
+}
+
+#cameraVideo,
+#imagePreview {
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: var(--border-radius-md);
+    background: #000;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+#imagePreview {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.capture-btn,
+.analyze-btn,
+.retake-btn {
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.capture-btn,
+.analyze-btn {
+    background: var(--primary-color);
+    color: white;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2);
+}
+
+.capture-btn:hover,
+.analyze-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(5, 150, 105, 0.3);
+}
+
+.preview-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.retake-btn {
+    background: #e2e8f0;
+    color: var(--text-main);
+    flex: 1;
+}
+
+.retake-btn:hover {
+    background: #cbd5e1;
+}
+
+.analyze-btn {
+    flex: 2;
+}
+
+.analysis-result {
+    margin-top: 25px;
+    padding: 20px;
+    background: #f0fdf4;
+    border-radius: var(--border-radius-md);
+    border: 1px solid #bbf7d0;
+    text-align: left;
+}
+
+.analysis-result.error {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+.analysis-result h3 {
+    color: var(--primary-dark);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #bbf7d0;
+    padding-bottom: 10px;
+}
+
+.result-item {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.result-label {
+    font-weight: 600;
+    color: var(--text-main);
+    min-width: 80px;
+}
+
+.result-value {
+    color: var(--text-muted);
+}
+
+.disease-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #fee2e2;
+    color: #ef4444;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.healthy-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #dcfce3;
+    color: #16a34a;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Footer */
 footer {
     background-color: #0f172a;
@@ -463,22 +752,22 @@ footer p {
         flex-direction: column;
         padding: 15px;
     }
-    
+
     nav {
         margin-top: 15px;
         gap: 15px;
     }
-    
+
     .hero {
         padding-top: 140px;
     }
-    
+
     .practice-item {
         flex-direction: column;
         text-align: center;
         gap: 15px;
     }
-    
+
     .practice-item:hover {
         transform: translateY(-5px);
         border-left: none;

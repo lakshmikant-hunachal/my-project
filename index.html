@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Crop Doctor | Advanced Plant Care</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <!-- Navigation Bar -->
@@ -26,7 +30,8 @@
     <section class="hero">
         <div class="hero-text">
             <h1>Detect Crop Disease Instantly</h1>
-            <p>Upload your crop photo and get instant disease detection, treatment advice and yield improvement tips.</p>
+            <p>Upload your crop photo and get instant disease detection, treatment advice and yield improvement tips.
+            </p>
             <button onclick="uploadAlert()">Upload Crop Image</button>
         </div>
     </section>
@@ -63,19 +68,22 @@
                 <div class="card-icon">🌾</div>
                 <h3>Kharif Crops</h3>
                 <p><strong>Season:</strong> Monsoon (July - October)</p>
-                <p>Require warm, wet weather. Major crops include Rice, Maize, Sorghum, Pearl Millet/Bajra, Finger Millet/Ragi (cereals), Arhar (pulses), Soyabean.</p>
+                <p>Require warm, wet weather. Major crops include Rice, Maize, Sorghum, Pearl Millet/Bajra, Finger
+                    Millet/Ragi (cereals), Arhar (pulses), Soyabean.</p>
             </div>
             <div class="info-card fade-in">
                 <div class="card-icon">🌱</div>
                 <h3>Rabi Crops</h3>
                 <p><strong>Season:</strong> Winter (October - March)</p>
-                <p>Need cold weather for growth and warm weather for seed maturation. Key crops are Wheat, Barley, Oats (cereals), Chickpea/Gram (pulses), Linseed, Mustard.</p>
+                <p>Need cold weather for growth and warm weather for seed maturation. Key crops are Wheat, Barley, Oats
+                    (cereals), Chickpea/Gram (pulses), Linseed, Mustard.</p>
             </div>
             <div class="info-card fade-in">
                 <div class="card-icon">🍉</div>
                 <h3>Zaid Crops</h3>
                 <p><strong>Season:</strong> Summer (March - June)</p>
-                <p>Grown in the short season between Kharif and Rabi. These require warm, dry weather and a longer day length for flowering. Examples: Watermelon, Cucumber, Bitter Gourd.</p>
+                <p>Grown in the short season between Kharif and Rabi. These require warm, dry weather and a longer day
+                    length for flowering. Examples: Watermelon, Cucumber, Bitter Gourd.</p>
             </div>
         </div>
     </section>
@@ -90,7 +98,8 @@
                 <div class="disease-content">
                     <h3>Leaf Blight</h3>
                     <p class="disease-cause"><strong>Cause:</strong> Fungal or Bacterial pathogens</p>
-                    <p>Characterized by rapid browning and dying of plant tissue. Often thrives in warm, wet conditions.</p>
+                    <p>Characterized by rapid browning and dying of plant tissue. Often thrives in warm, wet conditions.
+                    </p>
                     <span class="treatment-badge">Fungicide Treatment</span>
                 </div>
             </div>
@@ -99,7 +108,8 @@
                 <div class="disease-content">
                     <h3>Powdery Mildew</h3>
                     <p class="disease-cause"><strong>Cause:</strong> Fungal spores</p>
-                    <p>Appears as white, powdery spots on leaves and stems. Can severely reduce crop yield by inhibiting photosynthesis.</p>
+                    <p>Appears as white, powdery spots on leaves and stems. Can severely reduce crop yield by inhibiting
+                        photosynthesis.</p>
                     <span class="treatment-badge">Sulfur Sprays</span>
                 </div>
             </div>
@@ -108,7 +118,8 @@
                 <div class="disease-content">
                     <h3>Rust</h3>
                     <p class="disease-cause"><strong>Cause:</strong> Pucciniales Fungi</p>
-                    <p>Identified by rust-colored spores on lower leaf surfaces. Extremely damaging to cereal crops like wheat.</p>
+                    <p>Identified by rust-colored spores on lower leaf surfaces. Extremely damaging to cereal crops like
+                        wheat.</p>
                     <span class="treatment-badge">Crop Rotation</span>
                 </div>
             </div>
@@ -123,26 +134,70 @@
                 <div class="practice-icon">💧</div>
                 <div class="practice-text">
                     <h3>Precision Irrigation</h3>
-                    <p>Utilize drip or sprinkler systems to minimize water waste and deliver moisture directly to the root zone, improving water efficiency by over 30%.</p>
+                    <p>Utilize drip or sprinkler systems to minimize water waste and deliver moisture directly to the
+                        root zone, improving water efficiency by over 30%.</p>
                 </div>
             </div>
             <div class="practice-item fade-in">
                 <div class="practice-icon">🌍</div>
                 <div class="practice-text">
                     <h3>Soil Conservation</h3>
-                    <p>Adopt cover cropping and no-till farming to prevent soil erosion, retain moisture, and build healthy soil organic matter essential for resilience.</p>
+                    <p>Adopt cover cropping and no-till farming to prevent soil erosion, retain moisture, and build
+                        healthy soil organic matter essential for resilience.</p>
                 </div>
             </div>
             <div class="practice-item fade-in">
                 <div class="practice-icon">🌿</div>
                 <div class="practice-text">
                     <h3>Integrated Pest Management (IPM)</h3>
-                    <p>Combine biological, cultural, physical, and chemical tools in a way that minimizes economic, health, and environmental risks while suppressing pests.</p>
+                    <p>Combine biological, cultural, physical, and chemical tools in a way that minimizes economic,
+                        health, and environmental risks while suppressing pests.</p>
                 </div>
             </div>
         </div>
     </section>
 
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal-overlay">
+        <div class="modal-content fade-in">
+            <span class="close-modal" onclick="closeUploadModal()">&times;</span>
+            <h2>Upload Crop Image</h2>
+            <p>Select an option to provide a picture of your crop</p>
+
+            <div class="upload-options">
+                <button class="upload-option-btn" onclick="startCamera()">
+                    <span class="btn-icon">📷</span>
+                    Use Camera
+                </button>
+                <div class="divider">OR</div>
+                <label for="fileInput" class="upload-option-btn file-label">
+                    <span class="btn-icon">📁</span>
+                    Browse Files
+                </label>
+                <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)"
+                    style="display: none;">
+            </div>
+
+            <div id="cameraContainer" class="camera-container" style="display: none;">
+                <video id="cameraVideo" autoplay playsinline></video>
+                <button class="capture-btn" onclick="captureImage()">Capture Image</button>
+            </div>
+
+            <div id="previewContainer" class="preview-container" style="display: none;">
+                <h3>Image Preview</h3>
+                <img id="imagePreview" alt="Crop Preview">
+                <div class="preview-actions">
+                    <button class="retake-btn" onclick="resetUpload()">Try Again</button>
+                    <button class="analyze-btn" onclick="analyzeCrop()">Analyze Crop</button>
+                </div>
+            </div>
+
+            <div id="analysisResult" class="analysis-result fade-in" style="display: none;">
+                <!-- Results will be injected here -->
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -151,4 +206,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
