@@ -1,0 +1,88 @@
+/* Google Translate Widget Styling */
+.nav-translate-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: rgba(16, 185, 129, 0.1);
+    padding: 4px 12px;
+    border-radius: 30px;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    transition: all 0.3s ease;
+}
+
+.nav-translate-wrapper:hover {
+    background-color: rgba(16, 185, 129, 0.2);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+.auth-translate-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 6px 16px;
+    border-radius: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid var(--primary-color, #059669);
+    backdrop-filter: blur(10px);
+}
+
+.language-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--primary-dark, #047857);
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.translate-container {
+    display: flex;
+    align-items: center;
+}
+
+.goog-te-combo {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 2px solid var(--primary-color, #059669);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--primary-dark, #047857);
+    background-color: white;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.goog-te-combo:hover, .goog-te-combo:focus {
+    background-color: #f0fdf4;
+    border-color: var(--primary-dark, #047857);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* Hide Google branding */
+.goog-te-gadget {
+    color: transparent !important;
+    font-size: 0px !important;
+}
+
+.goog-te-gadget .goog-te-combo {
+    margin: 0 !important;
+}
+
+.goog-logo-link, .goog-te-gadget span, .goog-te-gadget img {
+    display: none !important;
+}
+
+.goog-te-banner-frame {
+    display: none !important;
+}
+
+body {
+    top: 0px !important;
+}

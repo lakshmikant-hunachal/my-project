@@ -722,6 +722,101 @@ nav a:not(.nav-btn):hover::after {
     }
 }
 
+/* Water Quality Section */
+.water-quality {
+    background-color: #f0f9ff;
+}
+
+.water-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.water-card {
+    background: var(--surface-color);
+    padding: 40px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.water-card h3 {
+    color: var(--primary-dark);
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.water-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.water-btn {
+    padding: 12px 24px;
+    border-radius: 50px;
+    border: none;
+    background-color: #0ea5e9;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    box-shadow: 0 4px 6px rgba(14, 165, 233, 0.2);
+}
+
+.water-btn:hover {
+    background-color: #0284c7;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(14, 165, 233, 0.3);
+}
+
+.water-btn.outline {
+    background-color: transparent;
+    color: #0ea5e9;
+    border: 2px solid #0ea5e9;
+    box-shadow: none;
+}
+
+.water-btn.outline:hover {
+    background-color: #f0f9ff;
+    box-shadow: none;
+}
+
+.water-result {
+    margin-top: 30px;
+    padding: 24px;
+    background: #f8fafc;
+    border-radius: var(--border-radius-md);
+    text-align: left;
+    border-left: 4px solid #0ea5e9;
+    animation: fadeIn 0.4s ease;
+}
+
+.water-result h4 {
+    color: var(--primary-dark);
+    margin-bottom: 15px;
+    font-size: 1.25rem;
+}
+
+.water-result p {
+    color: var(--text-main);
+    margin-bottom: 12px;
+}
+
+.water-result ul {
+    margin-left: 20px;
+    color: var(--text-muted);
+}
+
+.water-result ul li {
+    margin-bottom: 8px;
+}
+
 /* Footer */
 footer {
     background-color: #0f172a;

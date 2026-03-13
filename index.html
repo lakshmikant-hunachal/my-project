@@ -10,6 +10,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="translate.css">
 </head>
 
 <body>
@@ -21,6 +22,11 @@
             <a href="index.html">Home</a>
             <a href="index.html#crops">Crops</a>
             <a href="index.html#diseases">Diseases</a>
+            <a href="index.html#water-quality">Water</a>
+            <div class="nav-translate-wrapper">
+                <span class="language-label">Language:</span>
+                <div id="google_translate_element" class="translate-container"></div>
+            </div>
             <a href="login.html" class="nav-btn login-btn-nav">Login</a>
             <a href="register.html" class="nav-btn register-btn-nav">Register</a>
         </nav>
@@ -126,6 +132,24 @@
         </div>
     </section>
 
+    <!-- Water Quality Section -->
+    <section class="info-section water-quality" id="water-quality">
+        <h2 class="section-title">Water Quality Analyzer</h2>
+        <p class="section-subtitle">Determine your water type and get tailored irrigation advice.</p>
+        
+        <div class="water-container">
+            <div class="water-card fade-in">
+                <h3>Select Your Water Type</h3>
+                <div class="water-options">
+                    <button class="water-btn" onclick="checkWater('sweet')">💧 Sweet / Fresh Water</button>
+                    <button class="water-btn" onclick="checkWater('salt')">🧂 Salt / Hard Water</button>
+                    <button class="water-btn outline" onclick="checkWater('unknown')">Not Sure? How to check</button>
+                </div>
+                <div id="waterResult" class="water-result" style="display: none;"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- Agriculture Best Practices -->
     <section class="info-section best-practices" id="practices">
         <h2 class="section-title">Modern Farming Practices</h2>
@@ -204,6 +228,16 @@
         <p>© 2026 Smart Crop Doctor | Developed by Lakshmikant</p>
     </footer>
 
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,hi,mr,ta,te,kn,ml,gu,pa,bn,ur',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <script src="script.js"></script>
 </body>
 

@@ -7,8 +7,14 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="registerpageStyle.css">
+    <link rel="stylesheet" href="translate.css">
 </head>
 <body>
+
+    <div class="auth-translate-wrapper fade-in">
+        <span class="language-label">Language:</span>
+        <div id="google_translate_element" class="translate-container auth-translate"></div>
+    </div>
 
     <div class="register-container">
         <div class="register-box fade-in">
@@ -55,6 +61,16 @@
         </div>
     </div>
 
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,hi,mr,ta,te,kn,ml,gu,pa,bn,ur',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <script src="auth.js"></script>
 </body>
 </html>

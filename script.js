@@ -153,6 +153,58 @@ function analyzeCrop() {
     }, 2000); // 2 second mock delay
 }
 
+// ---- Water Quality Logic ----
+function checkWater(type) {
+    const resultDiv = document.getElementById('waterResult');
+    resultDiv.style.display = 'block';
+    
+    // For smooth appearance
+    resultDiv.style.animation = 'none';
+    resultDiv.offsetHeight; /* trigger reflow */
+    resultDiv.style.animation = null; 
+
+    if (type === 'sweet') {
+        resultDiv.innerHTML = `
+            <h4>💧 Sweet / Fresh Water Detected</h4>
+            <p><strong>Status:</strong> Optimal for agriculture.</p>
+            <p><strong>Recommendation:</strong> Your water is great for most crops. You can effectively use <strong>Precision Irrigation</strong>.</p>
+            <ul>
+                <li>Utilize drip or sprinkler systems to minimize water waste.</li>
+                <li>Deliver moisture directly to the root zone, improving water efficiency by over 30%.</li>
+            </ul>
+        `;
+        resultDiv.style.borderLeftColor = '#10b981'; // Green
+    } else if (type === 'salt') {
+        resultDiv.innerHTML = `
+            <h4>🧂 Salt / Hard Water Detected</h4>
+            <p><strong>Status:</strong> Requires careful management.</p>
+            <p><strong>Recommendation:</strong> High salinity can damage roots and reduce yield. Consider these practices:</p>
+            <ul>
+                <li><strong>Precision Irrigation:</strong> Utilize <strong>drip systems</strong> (not sprinklers) to deliver moisture directly to the root zone without wetting the leaves, which prevents salt burn.</li>
+                <li>Leach the soil periodically with excess water to push salts below the root zone.</li>
+                <li>Grow salt-tolerant crops like Barley, Rye, or Date Palms.</li>
+            </ul>
+        `;
+        resultDiv.style.borderLeftColor = '#f59e0b'; // Orange
+    } else if (type === 'unknown') {
+        resultDiv.innerHTML = `
+            <h4>🔍 How to Check Your Water Quality</h4>
+            <p>If you are unsure about your water content, here are ways to test it:</p>
+            <ul>
+                <li><strong>Taste Test:</strong> The simplest method. If it tastes salty or brackish, it has high salinity. Sweet water tastes plain and fresh.</li>
+                <li><strong>Observation:</strong> Check for white chalky residue on leaves after sprinkler irrigation or on the soil surface when dry.</li>
+                <li><strong>EC Meter:</strong> Use an Electrical Conductivity (EC) meter to measure dissolved salts precisely.</li>
+                <li><strong>Lab Testing:</strong> For a comprehensive analysis, send a water sample to a local agricultural testing laboratory.</li>
+            </ul>
+            <p>Once you know your water type, you can use <strong>Precision Irrigation</strong> tailored to your needs to improve water efficiency by over 30%!</p>
+        `;
+        resultDiv.style.borderLeftColor = '#0ea5e9'; // Blue
+    }
+    
+    // Scroll to the result
+    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
 // Scroll Animation Observer
 document.addEventListener('DOMContentLoaded', () => {
     const observerOptions = {
