@@ -9,13 +9,17 @@ function uploadAlert() {
         resetUpload();
     } else {
         alert("Please login or register to use the Upload Crop Image feature.");
+        sessionStorage.setItem('pendingAction', 'upload');
         window.location.href = 'login.html';
     }
 }
 
+let analysisTimer = null;
+
 function closeUploadModal() {
     document.getElementById('uploadModal').classList.remove('active');
     stopCamera();
+    clearTimeout(analysisTimer);
     resetUpload();
 }
 
@@ -63,6 +67,9 @@ async function startCamera() {
         resetUpload();
     }
 }
+
+// Ensure camera stops if user navigates away (B-07)
+window.addEventListener('beforeunload', stopCamera);
 
 function stopCamera() {
     if (videoStream) {
@@ -112,7 +119,7 @@ function analyzeCrop() {
     analyzeBtn.disabled = true;
 
     // Simulate AI processing time
-    setTimeout(() => {
+    analysisTimer = setTimeout(() => {
         analyzeBtn.textContent = originalText;
         analyzeBtn.disabled = false;
 
@@ -132,7 +139,7 @@ function analyzeCrop() {
         const randomResult = mockDiseases[Math.floor(Math.random() * mockDiseases.length)];
 
         resultContainer.innerHTML = `
-            <h3>Analysis Complete</h3>
+            <h3>Analysis Complete <span style="font-size: 0.8rem; background: #fee2e2; color: #ef4444; padding: 2px 6px; border-radius: 4px; margin-left: 10px;">Demo Mode - Not Real Analysis</span></h3>
             <div class="result-item">
                 <span class="result-label">Status:</span>
                 <span class="${randomResult.tag}">${randomResult.name}</span>
@@ -158,10 +165,13 @@ function checkWater(type) {
     const resultDiv = document.getElementById('waterResult');
     resultDiv.style.display = 'block';
     
-    // For smooth appearance
+    // For smooth appearance without offsetHeight reflow lag (L-05)
     resultDiv.style.animation = 'none';
-    resultDiv.offsetHeight; /* trigger reflow */
-    resultDiv.style.animation = null; 
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            resultDiv.style.animation = 'fadeIn 0.6s ease-out forwards';
+        });
+    });
 
     if (type === 'sweet') {
         resultDiv.innerHTML = `
@@ -239,31 +249,55 @@ document.addEventListener('DOMContentLoaded', () => {
         loginBtn.style.display = 'none';
         registerBtn.style.display = 'none';
 
-        // Add Welcome Message
-        const welcomeSpan = document.createElement('span');
-        welcomeSpan.style.color = 'white';
-        welcomeSpan.style.fontWeight = '500';
-        welcomeSpan.style.marginRight = '15px';
-        welcomeSpan.textContent = '👋 Hi, ' + currentUser.name;
+        // Check if welcome message already exists to avoid duplicates (L-02)
+        if (!document.getElementById('welcome-msg')) {
+            // Add Welcome Message
+            const welcomeSpan = document.createElement('span');
+            welcomeSpan.id = 'welcome-msg';
+            welcomeSpan.style.color = 'white';
+            welcomeSpan.style.fontWeight = '500';
+            welcomeSpan.style.marginRight = '15px';
+            welcomeSpan.textContent = '👋 Hi, ' + currentUser.name;
 
-        // Add Logout Button
-        const logoutBtn = document.createElement('a');
-        logoutBtn.href = '#';
-        logoutBtn.className = 'nav-btn';
-        logoutBtn.textContent = 'Logout';
-        logoutBtn.style.backgroundColor = '#ff4d4d'; // Red color for logout
-        logoutBtn.style.color = 'white';
-        logoutBtn.style.border = 'none';
+            // Add Logout Button
+            const logoutBtn = document.createElement('a');
+            logoutBtn.href = '#';
+            logoutBtn.className = 'nav-btn';
+            logoutBtn.textContent = 'Logout';
+            logoutBtn.style.backgroundColor = '#ff4d4d'; // Red color for logout
+            logoutBtn.style.color = 'white';
+            logoutBtn.style.border = 'none';
 
-        logoutBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            localStorage.removeItem('smartcrop_current_user');
-            alert('You have been logged out successfully.');
-            window.location.reload(); // Reload to update UI back to guest state
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                // Clear all data to protect privacy on shared computers (B-09)
+                localStorage.removeItem('smartcrop_current_user');
+                localStorage.removeItem('smartcrop_users');
+                alert('You have been logged out and all data cleared from this device successfully.');
+                window.location.reload(); // Reload to update UI back to guest state
+            });
+
+            // Insert them into nav
+            nav.appendChild(welcomeSpan);
+            nav.appendChild(logoutBtn);
+        }
+    }
+    
+    // Check pending action intent (B-08)
+    if (currentUser && sessionStorage.getItem('pendingAction') === 'upload') {
+        sessionStorage.removeItem('pendingAction');
+        document.getElementById('uploadModal').classList.add('active');
+        resetUpload();
+    }
+
+    // ----- PWA Service Worker Registration -----
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').then(registration => {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, err => {
+                console.log('ServiceWorker registration failed: ', err);
+            });
         });
-
-        // Insert them into nav
-        nav.appendChild(welcomeSpan);
-        nav.appendChild(logoutBtn);
     }
 });

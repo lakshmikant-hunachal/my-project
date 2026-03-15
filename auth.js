@@ -26,6 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("Please fill in all fields with valid data.");
                 return;
             }
+
+            // Strict email format validation (B-04)
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert("Please enter a valid email address format.");
+                return;
+            }
             
             // Fetch existing users from localStorage
             let users = JSON.parse(localStorage.getItem('smartcrop_users')) || [];
