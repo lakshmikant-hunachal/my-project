@@ -70,22 +70,107 @@ document.addEventListener('DOMContentLoaded', () => {
             // Fetch existing users from localStorage
             let users = JSON.parse(localStorage.getItem('smartcrop_users')) || [];
             
-            // Find user with matching email and password
-            const matchedUser = users.find(user => user.email === email && user.password === password);
+            // Find user with matching email
+            const emailExists = users.find(user => user.email === email);
             
-            if (matchedUser) {
-                // Login successful
-                alert("Login successful! Welcome back.");
-                
-                // Save current logged in user session (optional, but good practice)
-                localStorage.setItem('smartcrop_current_user', JSON.stringify(matchedUser));
-                
-                // Redirect to home page
-                window.location.href = 'index.html';
-            } else {
-                // Invalid email or password
-                alert("Invalid email ID or password. Please try again.");
+            if (!emailExists) {
+                alert("Please enter a valid email. This email is not registered.");
+                return;
             }
+            
+            if (emailExists.password !== password) {
+                alert("Invalid password. Please try again or use Forgot Password.");
+                return;
+            }
+
+            // Login successful
+            alert("Login successful! Welcome back.");
+            
+            // Save current logged in user session (optional, but good practice)
+            localStorage.setItem('smartcrop_current_user', JSON.stringify(emailExists));
+            
+            // Redirect to home page
+            window.location.href = 'index.html';
+        });
+    }
+
+    // ----- Forgot Password Logic -----
+    const forgotPasswordLink = document.getElementById('forgot-password-link');
+    const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+    const closeForgotModal = document.getElementById('close-forgot-modal');
+    
+    if (forgotPasswordLink && forgotPasswordModal) {
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            forgotPasswordModal.style.display = 'flex';
+            document.getElementById('forgot-step-1').style.display = 'block';
+            document.getElementById('forgot-step-2').style.display = 'none';
+        });
+
+        closeForgotModal.addEventListener('click', () => {
+            forgotPasswordModal.style.display = 'none';
         });
     }
 });
+
+let currentForgotMode = '';
+let generatedCode = '';
+let targetEmail = '';
+
+window.sendVerificationCode = function(mode) {
+    const email = document.getElementById('forgot-email').value.trim();
+    if (!email) {
+        alert("Please enter your registered email.");
+        return;
+    }
+    
+    let users = JSON.parse(localStorage.getItem('smartcrop_users')) || [];
+    const userExists = users.find(user => user.email === email);
+    
+    if (!userExists) {
+        alert("Please enter a valid email. This email is not registered.");
+        return;
+    }
+
+    // Simulate sending code
+    generatedCode = Math.floor(1000 + Math.random() * 9000).toString();
+    currentForgotMode = mode;
+    targetEmail = email;
+    
+    alert(`A verification code has been sent to ${email} (Simulation: The code is ${generatedCode})`);
+    
+    document.getElementById('forgot-step-1').style.display = 'none';
+    document.getElementById('forgot-step-2').style.display = 'block';
+    
+    if (mode === 'change') {
+        document.getElementById('new-password-group').style.display = 'block';
+    } else {
+        document.getElementById('new-password-group').style.display = 'none';
+    }
+};
+
+window.verifyAndProceed = function() {
+    const codeEntered = document.getElementById('verification-code').value.trim();
+    if (codeEntered !== generatedCode) {
+        alert("Invalid verification code. Please try again.");
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem('smartcrop_users')) || [];
+    const userIndex = users.findIndex(user => user.email === targetEmail);
+
+    if (currentForgotMode === 'know') {
+        alert(`Your password is: ${users[userIndex].password}`);
+        document.getElementById('forgotPasswordModal').style.display = 'none';
+    } else if (currentForgotMode === 'change') {
+        const newPassword = document.getElementById('new-password').value;
+        if (!newPassword) {
+            alert("Please enter a new password.");
+            return;
+        }
+        users[userIndex].password = newPassword;
+        localStorage.setItem('smartcrop_users', JSON.stringify(users));
+        alert("Password changed successfully! You can now log in with your new password.");
+        document.getElementById('forgotPasswordModal').style.display = 'none';
+    }
+};

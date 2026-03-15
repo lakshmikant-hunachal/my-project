@@ -851,10 +851,20 @@ footer p {
     nav {
         margin-top: 15px;
         gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .hero {
         padding-top: 140px;
+    }
+    
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+    
+    .hero p {
+        font-size: 1rem;
     }
 
     .practice-item {
@@ -867,5 +877,70 @@ footer p {
         transform: translateY(-5px);
         border-left: none;
         border-bottom: 4px solid var(--primary-color);
+    }
+}
+
+@media (max-width: 480px) {
+    header .logo {
+        font-size: 20px;
+    }
+    
+    nav {
+        gap: 10px;
+    }
+    
+    nav a {
+        font-size: 14px;
+    }
+    
+    .nav-btn {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+    
+    .hero {
+        padding: 160px 15px 40px;
+    }
+    
+    .hero button {
+        padding: 12px 24px;
+        font-size: 16px;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+    }
+
+    .card {
+        padding: 20px 15px;
+    }
+
+    .info-card {
+        padding: 25px 20px;
+    }
+    
+    .disease-content {
+        padding: 20px;
+    }
+    
+    .water-card {
+        padding: 25px 20px;
+    }
+    
+    .water-btn {
+        width: 100%;
+    }
+
+    .upload-options {
+        gap: 10px;
+    }
+    
+    .preview-actions {
+        flex-direction: column;
+    }
+    
+    .modal-content {
+        padding: 25px 20px;
+        width: 95%;
     }
 }
