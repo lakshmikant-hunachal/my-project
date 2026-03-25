@@ -27,6 +27,7 @@
             <a href="index.html#crops">Crops</a>
             <a href="index.html#diseases">Diseases</a>
             <a href="index.html#water-quality">Water</a>
+            <button id="voiceBtn" class="nav-btn" title="Voice Assistant" style="background: transparent; border: 1px solid var(--primary-color); font-size: 1.2rem; cursor: pointer; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">🎤</button>
             <div class="nav-translate-wrapper">
                 <span class="language-label">Language:</span>
                 <div id="google_translate_element" class="translate-container"></div>
@@ -69,6 +70,29 @@
         </div>
     </section>
 
+    <!-- Weather Widget (F-04) Mock -->
+    <section class="info-section" style="background: linear-gradient(135deg, #0ea5e9, #3b82f6); color: white; padding: 60px 5%;">
+        <div style="max-width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 30px;">
+            <div style="text-align: left;">
+                <h2 style="font-size: 2rem; margin-bottom: 10px;">🌤 Local Farm Weather</h2>
+                <p style="opacity: 0.9; font-size: 1.1rem;" id="weather-location">Detecting location...</p>
+                <div style="margin-top: 20px; font-size: 0.95rem; background: rgba(255,255,255,0.2); padding: 15px; border-radius: var(--border-radius-md); backdrop-filter: blur(5px);">
+                    <strong>💡 AI Advisory:</strong> <span id="weather-advisory">High humidity detected. Watch for fungal diseases in Kharif crops.</span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 40px; text-align: center;">
+                <div>
+                    <div style="font-size: 3rem; font-weight: 700; line-height: 1;">28°C</div>
+                    <div style="opacity: 0.8; margin-top: 5px;">Temperature</div>
+                </div>
+                <div>
+                    <div style="font-size: 3rem; font-weight: 700; line-height: 1;">85%</div>
+                    <div style="opacity: 0.8; margin-top: 5px;">Humidity</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Crop Information Section -->
     <section class="info-section crop-info" id="crops">
         <h2 class="section-title">Essential Crop Knowledge</h2>
@@ -101,9 +125,9 @@
     <!-- Common Diseases Section -->
     <section class="info-section diseases-info" id="diseases">
         <h2 class="section-title">Common Crop Diseases</h2>
-        <p class="section-subtitle">Identify and treat devastating plant diseases before they spread.</p>
+        <p class="section-subtitle">Identify and treat devastating plant diseases before they spread. Click a card to read more in the Encyclopedia.</p>
         <div class="grid-container">
-            <div class="disease-card fade-in">
+            <div class="disease-card fade-in" onclick="openDiseaseModal('blight')" style="cursor: pointer;">
                 <div class="disease-img red-gradient"></div>
                 <div class="disease-content">
                     <h3>Leaf Blight</h3>
@@ -113,7 +137,7 @@
                     <span class="treatment-badge">Fungicide Treatment</span>
                 </div>
             </div>
-            <div class="disease-card fade-in">
+            <div class="disease-card fade-in" onclick="openDiseaseModal('mildew')" style="cursor: pointer;">
                 <div class="disease-img orange-gradient"></div>
                 <div class="disease-content">
                     <h3>Powdery Mildew</h3>
@@ -123,7 +147,7 @@
                     <span class="treatment-badge">Sulfur Sprays</span>
                 </div>
             </div>
-            <div class="disease-card fade-in">
+            <div class="disease-card fade-in" onclick="openDiseaseModal('rust')" style="cursor: pointer;">
                 <div class="disease-img brown-gradient"></div>
                 <div class="disease-content">
                     <h3>Rust</h3>
@@ -132,6 +156,34 @@
                         wheat.</p>
                     <span class="treatment-badge">Crop Rotation</span>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Soil Health Calculator (F-08) Mock -->
+    <section class="info-section" style="background-color: var(--surface-color); border-top: 1px solid #e2e8f0;">
+        <h2 class="section-title">🌱 Soil Health Calculator</h2>
+        <p class="section-subtitle">Enter your N-P-K (Nitrogen, Phosphorus, Potassium) values for a personalized simulated fertilizer prescription.</p>
+        
+        <div style="max-width: 600px; margin: 0 auto; background: #f8fafc; padding: 40px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-sm); text-align: left;">
+            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <div style="flex: 1;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Nitrogen (N)</label>
+                    <input type="number" id="soil-n" placeholder="e.g. 40" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <div style="flex: 1;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Phosphorus (P)</label>
+                    <input type="number" id="soil-p" placeholder="e.g. 20" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <div style="flex: 1;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Potassium (K)</label>
+                    <input type="number" id="soil-k" placeholder="e.g. 30" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+            </div>
+            <button class="login-btn" onclick="calculateSoil()" style="width: 100%;">Calculate Prescription</button>
+            
+            <div id="soil-result" style="display: none; margin-top: 25px; padding: 20px; background: #ecfccb; border: 1px solid #d9f99d; border-radius: 8px;">
+                <!-- Result injected here -->
             </div>
         </div>
     </section>
@@ -223,6 +275,33 @@
 
             <div id="analysisResult" class="analysis-result fade-in" style="display: none;">
                 <!-- Results will be injected here -->
+            </div>
+            
+            <div id="saveResultContainer" style="display: none; margin-top: 15px;">
+                <button class="login-btn" onclick="saveScanResult()" style="width: 100%; border-radius: 50px;">💾 Save to My Scan History</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Modal -->
+    <div id="dashboardModal" class="modal-overlay">
+        <div class="modal-content fade-in" style="max-width: 600px; max-height: 80vh; overflow-y: auto; text-align: left; padding: 30px;">
+            <span class="close-modal" onclick="closeDashboardModal()">&times;</span>
+            <h2 style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;"><span style="font-size: 1.5rem;">📊</span> My Dashboard</h2>
+            <p style="margin-bottom: 25px;">Track your crop disease scan history.</p>
+
+            <div id="scanHistoryContainer">
+                <!-- Scan history injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Disease Encyclopedia Modal -->
+    <div id="diseaseModal" class="modal-overlay">
+        <div class="modal-content fade-in" style="max-width: 700px; max-height: 80vh; overflow-y: auto; text-align: left; padding: 40px;">
+            <span class="close-modal" onclick="document.getElementById('diseaseModal').classList.remove('active')">&times;</span>
+            <div id="encyclopediaContent">
+                <!-- Content injected via JS -->
             </div>
         </div>
     </div>

@@ -794,7 +794,11 @@ nav a:not(.nav-btn):hover::after {
     border-radius: var(--border-radius-md);
     text-align: left;
     border-left: 4px solid #0ea5e9;
-    animation: fadeIn 0.4s ease;
+    opacity: 0;
+}
+
+.water-result.fade-in-active {
+    animation: fadeIn 0.4s ease forwards;
 }
 
 .water-result h4 {

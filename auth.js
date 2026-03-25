@@ -1,11 +1,17 @@
 // User Authentication Logic using LocalStorage
 
+// BUG-01 Fix: Use SubtleCrypto for secure async hashing
+async function hashPassword(str) {
+    const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return [...new Uint8Array(hashBuffer)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     
     // ----- Registration Logic -----
     const registerForm = document.getElementById('register-form');
     if (registerForm) {
-        registerForm.addEventListener('submit', function(e) {
+        registerForm.addEventListener('submit', async function(e) {
             e.preventDefault(); // Prevent default form submission
             
             // Get input values
@@ -15,15 +21,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('reg-password').value;
             const confirmPassword = document.getElementById('reg-confirm-password').value;
             
-            // Validation for unmatched data (passwords)
-            if (password !== confirmPassword) {
-                alert("Passwords do not match! Please enter valid, matched data.");
+            // BUG-04 Fix: Basic validation for empty data FIRST
+            if (!name || !email || !phone || !password || !confirmPassword) {
+                alert("Please fill in all fields with valid data.");
                 return;
             }
 
-            // Basic validation for empty data
-            if (!name || !email || !phone || !password) {
-                alert("Please fill in all fields with valid data.");
+            // BUG-13 Fix: JavaScript phone validation
+            const phoneRegex = /^(\+?\d{1,3}[- ]?)?\d{10}$/;
+            if (!phoneRegex.test(phone)) {
+                alert("Please enter a valid 10-digit phone number.");
                 return;
             }
 
@@ -31,6 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 alert("Please enter a valid email address format.");
+                return;
+            }
+
+            // Validation for unmatched data (passwords)
+            if (password !== confirmPassword) {
+                alert("Passwords do not match! Please enter valid, matched data.");
                 return;
             }
             
@@ -50,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 name: name,
                 email: email,
                 phone: phone,
-                password: password // In a real app, never store plain text passwords!
+                password: await hashPassword(password) // BUG-01 async hash passwords
             };
             
             // Add new user to array and save to localStorage
@@ -67,13 +80,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----- Login Logic -----
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault(); // Prevent default form submission
             
             // Get input values
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
             
+            // B-05 Rate Limit Data
+            let rateLimitData = JSON.parse(localStorage.getItem('smartcrop_login_attempts')) || {};
+            const now = Date.now();
+            if (rateLimitData[email]) {
+                const diffMins = (now - rateLimitData[email].timestamp) / (1000 * 60);
+                if (rateLimitData[email].attempts >= 5 && diffMins < 15) {
+                    alert('Too many failed login attempts. Please try again after 15 minutes.');
+                    return;
+                }
+                if (diffMins >= 15) {
+                    // Reset if lockout period passed
+                    rateLimitData[email] = { attempts: 0, timestamp: now };
+                }
+            } else {
+                rateLimitData[email] = { attempts: 0, timestamp: now };
+            }
+
             // Fetch existing users from localStorage
             let users = JSON.parse(localStorage.getItem('smartcrop_users')) || [];
             
@@ -85,16 +115,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            if (emailExists.password !== password) {
-                alert("Invalid password. Please try again or use Forgot Password.");
+            // Check password hash
+            const hashedInput = await hashPassword(password);
+            if (emailExists.password !== hashedInput) {
+                // Register failed attempt
+                rateLimitData[email].attempts += 1;
+                rateLimitData[email].timestamp = now;
+                localStorage.setItem('smartcrop_login_attempts', JSON.stringify(rateLimitData));
+
+                alert(`Invalid password. Please try again or use Forgot Password. (Attempt ${rateLimitData[email].attempts}/5)`);
                 return;
             }
+
+            // Reset attempts on success
+            delete rateLimitData[email];
+            localStorage.setItem('smartcrop_login_attempts', JSON.stringify(rateLimitData));
 
             // Login successful
             alert("Login successful! Welcome back.");
             
-            // Save current logged in user session (optional, but good practice)
-            localStorage.setItem('smartcrop_current_user', JSON.stringify(emailExists));
+            // Save current logged in user session
+            // Don't save password in cur_auth session securely
+            const sessionUser = {
+                name: emailExists.name,
+                email: emailExists.email,
+                phone: emailExists.phone
+            };
+            localStorage.setItem('smartcrop_current_user', JSON.stringify(sessionUser));
             
             // Redirect to home page
             window.location.href = 'index.html';
@@ -116,68 +163,94 @@ document.addEventListener('DOMContentLoaded', () => {
 
         closeForgotModal.addEventListener('click', () => {
             forgotPasswordModal.style.display = 'none';
+            // BUG-08 Fix: Reset fields and step
+            document.getElementById('forgot-email').value = '';
+            document.getElementById('verification-code').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('forgot-step-1').style.display = 'block';
+            document.getElementById('forgot-step-2').style.display = 'none';
+            if (window.resetOTPState) window.resetOTPState();
         });
     }
 });
 
-let currentForgotMode = '';
-let generatedCode = '';
-let targetEmail = '';
+// BUG-12 Fix: IIFE for OTP state
+(function forgotPasswordModule() {
+    let currentForgotMode = '';
+    let generatedCode = '';
+    let targetEmail = '';
 
-window.sendVerificationCode = function(mode) {
-    const email = document.getElementById('forgot-email').value.trim();
-    if (!email) {
-        alert("Please enter your registered email.");
-        return;
-    }
-    
-    let users = JSON.parse(localStorage.getItem('smartcrop_users')) || [];
-    const userExists = users.find(user => user.email === email);
-    
-    if (!userExists) {
-        alert("Please enter a valid email. This email is not registered.");
-        return;
-    }
+    window.resetOTPState = function() {
+        currentForgotMode = '';
+        generatedCode = '';
+        targetEmail = '';
+    };
 
-    // Simulate sending code
-    generatedCode = Math.floor(1000 + Math.random() * 9000).toString();
-    currentForgotMode = mode;
-    targetEmail = email;
-    
-    alert(`A verification code has been sent to ${email} (Simulation: The code is ${generatedCode})`);
-    
-    document.getElementById('forgot-step-1').style.display = 'none';
-    document.getElementById('forgot-step-2').style.display = 'block';
-    
-    if (mode === 'change') {
-        document.getElementById('new-password-group').style.display = 'block';
-    } else {
-        document.getElementById('new-password-group').style.display = 'none';
-    }
-};
-
-window.verifyAndProceed = function() {
-    const codeEntered = document.getElementById('verification-code').value.trim();
-    if (codeEntered !== generatedCode) {
-        alert("Invalid verification code. Please try again.");
-        return;
-    }
-
-    let users = JSON.parse(localStorage.getItem('smartcrop_users')) || [];
-    const userIndex = users.findIndex(user => user.email === targetEmail);
-
-    if (currentForgotMode === 'know') {
-        alert(`Your password is: ${users[userIndex].password}`);
-        document.getElementById('forgotPasswordModal').style.display = 'none';
-    } else if (currentForgotMode === 'change') {
-        const newPassword = document.getElementById('new-password').value;
-        if (!newPassword) {
-            alert("Please enter a new password.");
+    window.sendVerificationCode = function(mode) {
+        // BUG-02 Fix: Remove "Know Password" flow entirely
+        
+        const email = document.getElementById('forgot-email').value.trim();
+        if (!email) {
+            alert("Please enter your registered email.");
             return;
         }
-        users[userIndex].password = newPassword;
-        localStorage.setItem('smartcrop_users', JSON.stringify(users));
-        alert("Password changed successfully! You can now log in with your new password.");
-        document.getElementById('forgotPasswordModal').style.display = 'none';
-    }
-};
+        
+        let users = JSON.parse(localStorage.getItem('smartcrop_users')) || [];
+        const userExists = users.find(user => user.email === email);
+        
+        if (!userExists) {
+            alert("Please enter a valid email. This email is not registered.");
+            return;
+        }
+
+        // Simulate sending code
+        generatedCode = Math.floor(1000 + Math.random() * 9000).toString();
+        currentForgotMode = mode;
+        targetEmail = email;
+        
+        // BUG-03 Fix: Don't leak code in UI, log to console
+        console.log('[DEV ONLY] OTP:', generatedCode);
+        alert(`A verification code has been sent to ${email}. Check your inbox.`);
+        
+        document.getElementById('forgot-step-1').style.display = 'none';
+        document.getElementById('forgot-step-2').style.display = 'block';
+        
+        if (mode === 'change') {
+            document.getElementById('new-password-group').style.display = 'block';
+        } else {
+            document.getElementById('new-password-group').style.display = 'none';
+        }
+    };
+
+    window.verifyAndProceed = async function() {
+        // L-04: Prevent bypass if code wasn't generated
+        if (!generatedCode || !targetEmail) {
+            alert("Please request a verification code first.");
+            return;
+        }
+
+        const codeEntered = document.getElementById('verification-code').value.trim();
+        if (codeEntered !== generatedCode) {
+            alert("Invalid verification code. Please try again.");
+            return;
+        }
+
+        let users = JSON.parse(localStorage.getItem('smartcrop_users')) || [];
+        const userIndex = users.findIndex(user => user.email === targetEmail);
+
+        if (currentForgotMode === 'change') {
+            // BUG-07 Fix: Add trim and check length
+            const newPassword = document.getElementById('new-password').value.trim();
+            if (!newPassword || newPassword.length < 6) {
+                alert("Password must be at least 6 characters.");
+                return;
+            }
+            // BUG-01 Fix: use async SubtleCrypto hash
+            users[userIndex].password = await hashPassword(newPassword);
+            localStorage.setItem('smartcrop_users', JSON.stringify(users));
+            alert("Password changed successfully! You can now log in with your new password.");
+            document.getElementById('forgotPasswordModal').style.display = 'none';
+            window.resetOTPState();
+        }
+    };
+})();
