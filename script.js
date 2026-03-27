@@ -191,14 +191,19 @@ function saveScanResult() {
     const currentUser = JSON.parse(localStorage.getItem('smartcrop_current_user'));
     if (!currentUser || !currentMockDisease) return;
 
-    // Get the image preview source
-    const imageSrc = document.getElementById('imagePreview').src;
+    // L-05 Fix: Create a downscaled thumbnail to save localStorage space
+    const imagePreview = document.getElementById('imagePreview');
+    const thumbCanvas = document.createElement('canvas');
+    thumbCanvas.width = 150;
+    thumbCanvas.height = 150;
+    thumbCanvas.getContext('2d').drawImage(imagePreview, 0, 0, 150, 150);
+    const thumbnailSrc = thumbCanvas.toDataURL('image/jpeg', 0.5);
     
     // Create scan record
     const scanRecord = {
         userEmail: currentUser.email,
         timestamp: new Date().toISOString(),
-        image: imageSrc,
+        image: thumbnailSrc,
         disease: currentMockDisease.name,
         confidence: currentMockDisease.prob,
         treatment: currentMockDisease.treat,
@@ -207,10 +212,31 @@ function saveScanResult() {
 
     let allScans = JSON.parse(localStorage.getItem('smartcrop_disease_scans')) || [];
     allScans.unshift(scanRecord); // Add to beginning
-    localStorage.setItem('smartcrop_disease_scans', JSON.stringify(allScans));
+    
+    // L-05 Fix: Cap localStorage saves at 20
+    if (allScans.length > 20) {
+        allScans.splice(20);
+    }
+    
+    try {
+        localStorage.setItem('smartcrop_disease_scans', JSON.stringify(allScans));
+    } catch (e) {
+        if (e.name === 'QuotaExceededError') {
+            alert('Storage full. Cannot save scan. Please clear some history.');
+            return;
+        }
+    }
 
     alert("Scan result saved to your dashboard!");
     document.getElementById('saveResultContainer').style.display = 'none';
+}
+
+// L-03 Fix: HTML Escaping helper
+function escapeHTML(str) {
+    if (typeof str !== 'string') return str;
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
 }
 
 function openDashboardModal() {
@@ -233,14 +259,20 @@ function openDashboardModal() {
     let html = '<div style="display: flex; flex-direction: column; gap: 15px;">';
     
     userScans.forEach(scan => {
-        const date = new Date(scan.timestamp).toLocaleString();
+        const date = escapeHTML(new Date(scan.timestamp).toLocaleString());
+        
+        // L-03 Fix: Sanitise innerHTML variables
+        const safeDisease = escapeHTML(scan.disease);
+        const safeConfidence = escapeHTML(scan.confidence);
+        const safeTreatment = escapeHTML(scan.treatment);
+        
         html += `
             <div style="display: flex; gap: 15px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--border-radius-md); align-items: center;">
                 <img src="${scan.image}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1;" alt="Scan thumbnail">
                 <div style="flex: 1;">
                     <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">${date}</div>
-                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 5px;">${scan.disease} <span style="font-size: 0.8rem; font-weight: 400; color: var(--text-muted); margin-left: 10px;">Confidence: ${scan.confidence}</span></div>
-                    <div style="font-size: 0.9rem; color: var(--text-muted);">${scan.treatment}</div>
+                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 5px;">${safeDisease} <span style="font-size: 0.8rem; font-weight: 400; color: var(--text-muted); margin-left: 10px;">Confidence: ${safeConfidence}</span></div>
+                    <div style="font-size: 0.9rem; color: var(--text-muted);">${safeTreatment}</div>
                 </div>
             </div>
         `;
@@ -389,11 +421,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ----- F-04 Weather Mock Geolocation Simulation -----
     if ("geolocation" in navigator) {
-        // Just mock the city name instead of real API call for safety/local purpose
-        setTimeout(() => {
-            const locText = document.getElementById('weather-location');
-            if(locText) locText.textContent = "Location: Maharashtra, India";
-        }, 1500);
+        // L-06 Fix: Fetch real weather data
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            try {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                // Using openweathermap per instructions
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=YOUR_API_KEY&units=metric`);
+                if (!response.ok) throw new Error("API Limit or Key invalid");
+                const data = await response.json();
+                
+                const locText = document.getElementById('weather-location');
+                if(locText && data.name) {
+                    locText.textContent = `Location: ${data.name}, ${data.sys.country}`;
+                }
+            } catch (err) {
+                console.warn("Weather API fallback applied:", err);
+                const locText = document.getElementById('weather-location');
+                if(locText) locText.textContent = "Location: Maharashtra, India";
+            }
+        }, (err) => {
+            setTimeout(() => {
+                const locText = document.getElementById('weather-location');
+                if(locText) locText.textContent = "Location: Maharashtra, India";
+            }, 1500);
+        });
     }
 
     // ----- F-07 Voice Assistant (Web Speech API) -----
@@ -448,6 +500,16 @@ function calculateSoil() {
     
     if (isNaN(n) || isNaN(p) || isNaN(k)) {
         alert("Please enter valid numbers for N, P, and K.");
+        return;
+    }
+    
+    // L-04 Fix: Guard negative and absurd values
+    if (n < 0 || p < 0 || k < 0) {
+        alert("Values must be positive numbers.");
+        return;
+    }
+    if (n > 500 || p > 500 || k > 500) {
+        alert("Values are unrealistically high. Please enter values below 500.");
         return;
     }
 

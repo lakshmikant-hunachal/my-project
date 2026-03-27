@@ -6,6 +6,14 @@ async function hashPassword(str) {
     return [...new Uint8Array(hashBuffer)].map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
+// L-07 Fix: Shared Password Strength Validation
+function validatePassword(pw) {
+    if (pw.length < 8) return "Password must be at least 8 characters.";
+    if (!/\d/.test(pw)) return "Password must contain at least 1 number.";
+    if (!/[A-Z]/.test(pw)) return "Password must contain at least 1 uppercase letter.";
+    return null;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     
     // ----- Registration Logic -----
@@ -44,6 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // Validation for unmatched data (passwords)
             if (password !== confirmPassword) {
                 alert("Passwords do not match! Please enter valid, matched data.");
+                return;
+            }
+            
+            // L-07 Fix: Check password strength
+            const pwError = validatePassword(password);
+            if (pwError) {
+                alert(pwError);
                 return;
             }
             
@@ -208,6 +223,9 @@ document.addEventListener('DOMContentLoaded', () => {
         currentForgotMode = mode;
         targetEmail = email;
         
+        // L-01 Fix: Record OTP Generation Time
+        window.otpTimestamp = Date.now();
+        
         // BUG-03 Fix: Don't leak code in UI, log to console
         console.log('[DEV ONLY] OTP:', generatedCode);
         alert(`A verification code has been sent to ${email}. Check your inbox.`);
@@ -229,6 +247,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // L-01 Fix: Reject expired OTPs (5 mins = 300,000 ms)
+        if (Date.now() - window.otpTimestamp > 300000) {
+            alert("Code expired - resend");
+            return;
+        }
+
         const codeEntered = document.getElementById('verification-code').value.trim();
         if (codeEntered !== generatedCode) {
             alert("Invalid verification code. Please try again.");
@@ -241,10 +265,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentForgotMode === 'change') {
             // BUG-07 Fix: Add trim and check length
             const newPassword = document.getElementById('new-password').value.trim();
-            if (!newPassword || newPassword.length < 6) {
-                alert("Password must be at least 6 characters.");
+            
+            // L-07 Fix: Shared Password Strength Validation
+            const pwError = validatePassword(newPassword);
+            if (pwError) {
+                alert(pwError);
                 return;
             }
+            
             // BUG-01 Fix: use async SubtleCrypto hash
             users[userIndex].password = await hashPassword(newPassword);
             localStorage.setItem('smartcrop_users', JSON.stringify(users));
