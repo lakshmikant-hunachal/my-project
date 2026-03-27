@@ -524,3 +524,209 @@ window.openDiseaseModal = function(id) {
 
     modal.classList.add('active');
 };
+
+// ----- Interactive Crop Yield Guide Logic -----
+function showYieldRecommendations() {
+    // Check if the browser supports view transitions
+    if (!document.startViewTransition) {
+        updateYieldGuideContent();
+    } else {
+        // Start a view transition
+        document.startViewTransition(() => {
+            updateYieldGuideContent();
+        });
+    }
+}
+
+function updateYieldGuideContent() {
+    const soil = document.getElementById('guide-soil').value;
+    const water = document.getElementById('guide-water').value;
+    const season = document.getElementById('guide-season').value;
+    const resultContainer = document.getElementById('guide-result-container');
+    
+    // Generate content based on selections
+    const soilData = {
+        clay: {
+            title: "Clay Soil",
+            icon: "🧱",
+            tips: [
+                "Improve drainage by adding organic matter like compost or manure.",
+                "Avoid tilling when wet to prevent compaction.",
+                "Consider raised beds to improve aeration."
+            ]
+        },
+        sandy: {
+            title: "Sandy Soil",
+            icon: "🏖️",
+            tips: [
+                "Add copious amounts of organic matter to improve water retention.",
+                "Mulch heavily to prevent rapid moisture evaporation.",
+                "Apply fertilizers in frequent, small doses rather than all at once (leaches easily)."
+            ]
+        },
+        loamy: {
+            title: "Loamy Soil",
+            icon: "🌱",
+            tips: [
+                "Ideal soil type! Maintain with annual compost addition.",
+                "Practice crop rotation to prevent nutrient depletion.",
+                "Use cover crops in off-seasons to maintain structure."
+            ]
+        },
+        black: {
+            title: "Black Soil",
+            icon: "⚫",
+            tips: [
+                "Excellent moisture retention. Avoid over-irrigation.",
+                "Deep plowing during summer is recommended.",
+                "Perfect for cotton and soybeans."
+            ]
+        },
+        red: {
+            title: "Red Soil",
+            icon: "🔴",
+            tips: [
+                "Generally poor in nutrients and humus. Requires regular fertilization.",
+                "Add lime to correct acidity if needed.",
+                "Frequent, light irrigation is better than heavy, infrequent watering."
+            ]
+        },
+        alluvial: {
+            title: "Alluvial Soil",
+            icon: "🌊",
+            tips: [
+                "Highly fertile. Maintain fertility with balanced NPK application.",
+                "Ensure proper drainage in low-lying areas.",
+                "Suitable for a wide variety of high-yield crops."
+            ]
+        }
+    };
+
+    const waterData = {
+        canal: {
+            tips: [
+                "Follow scheduling strictly to avoid water-logging.",
+                "Construct proper field channels and drainage to remove excess water.",
+                "Leach salts periodically if canal water has high salinity."
+            ]
+        },
+        rainfed: {
+            tips: [
+                "Build bunds and trenches to harvest rainwater.",
+                "Choose drought-tolerant or short-duration crop varieties.",
+                "Practice mulching to conserve soil moisture during dry spells."
+            ]
+        },
+        borewell: {
+            tips: [
+                "Check water quality periodically for salt/mineral accumulation.",
+                "Use micro-irrigation (drip/sprinkler) to maximize efficiency and save electricity.",
+                "Avoid over-pumping to prevent aquifer depletion."
+            ]
+        },
+        drip: {
+            tips: [
+                "Implement fertigation to deliver nutrients directly to the root zone.",
+                "Regularly clean filters and flush laterals to prevent clogging.",
+                "Monitor soil moisture sensors to optimize the watering schedule."
+            ]
+        },
+        pond: {
+            tips: [
+                "Use solar pumps if possible to reduce energy costs.",
+                "Integrate aquaculture (fish farming) to double income and enrich water nutrients.",
+                "Dredge the pond before monsoon to maximize storage capacity."
+            ]
+        }
+    };
+
+    const seasonData = {
+        kharif: {
+            crops: ["Rice", "Maize", "Cotton", "Soybean", "Groundnut"],
+            months: "July to October",
+            tips: [
+                "Ensure proper field drainage to prevent water stagnation during heavy rains.",
+                "Monitor closely for fungal diseases which thrive in high humidity.",
+                "Sow seeds simultaneously in the region to minimize concentrated pest attacks."
+            ],
+            bonus: "Intercropping with pulses like pigeon pea can reduce risk and fix nitrogen."
+        },
+        rabi: {
+            crops: ["Wheat", "Barley", "Mustard", "Chickpea (Gram)", "Peas"],
+            months: "October to March",
+            tips: [
+                "Take advantage of residual soil moisture for early sowing.",
+                "Provide crucial irrigation at critical growth stages (e.g., CRI stage in wheat).",
+                "Protect sensitive crops from frost using light irrigation or smoke if predicted."
+            ],
+            bonus: "Use biofertilizers like Azotobacter for non-legumes or Rhizobium for legumes."
+        },
+        zaid: {
+            crops: ["Watermelon", "Cucumber", "Bitter Gourd", "Fodder crops"],
+            months: "March to June",
+            tips: [
+                "Provide frequent, light irrigations to combat high evaporation rates.",
+                "Use mulching (plastic or organic) to keep soil cool and retain moisture.",
+                "Harvest vegetables frequently to encourage more fruiting."
+            ],
+            bonus: "Growing zaid crops provides extra income and utilizes land that would otherwise lie fallow."
+        }
+    };
+
+    const sData = soilData[soil];
+    const wData = waterData[water];
+    const seData = seasonData[season];
+
+    let cropBadges = seData.crops.map(c => `<span class="guide-badge">${c}</span>`).join('');
+    
+    const seasonEmojis = {
+        kharif: "🌧️",
+        rabi: "❄️",
+        zaid: "☀️"
+    };
+
+    resultContainer.innerHTML = `
+        <div style="background: linear-gradient(to right, #f0fdf4, #ffffff); padding: 20px; border-radius: 8px; border-left: 4px solid var(--primary-color); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h3 style="color: var(--text-main); font-size: 1.3rem; margin-bottom: 5px;">Your Tailored Strategy</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem;">
+                    ${sData.icon} ${sData.title} + 💧 ${water.charAt(0).toUpperCase() + water.slice(1)} + ${seasonEmojis[season]} ${season.charAt(0).toUpperCase() + season.slice(1)} Season
+                </p>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">Season Duration</div>
+                <div style="font-weight: 600; color: var(--primary-dark);">${seData.months}</div>
+            </div>
+        </div>
+
+        <h3 class="guide-section-title">🌾 Recommended Crops</h3>
+        <div style="margin-left: 10px; margin-bottom: 15px;">
+            ${cropBadges}
+        </div>
+        
+        <h3 class="guide-section-title">🧱 Soil Improvement (${sData.title})</h3>
+        <ul class="guide-item-list">
+            ${sData.tips.map(t => `<li>${t}</li>`).join('')}
+        </ul>
+
+        <h3 class="guide-section-title">💧 Water & Irrigation (${water.charAt(0).toUpperCase() + water.slice(1)})</h3>
+        <ul class="guide-item-list">
+            ${wData.tips.map(t => `<li>${t}</li>`).join('')}
+        </ul>
+        
+        <h3 class="guide-section-title">🗓️ Seasonal Management (${season.charAt(0).toUpperCase() + season.slice(1)})</h3>
+        <ul class="guide-item-list">
+            ${seData.tips.map(t => `<li>${t}</li>`).join('')}
+        </ul>
+
+        <div style="margin-top: 25px; background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fde68a;">
+            <strong>💡 Bonus Tip:</strong> ${seData.bonus}
+        </div>
+    `;
+
+    resultContainer.style.display = 'block';
+    
+    setTimeout(() => {
+        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+}
