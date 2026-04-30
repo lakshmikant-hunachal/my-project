@@ -239,52 +239,7 @@ function escapeHTML(str) {
     return div.innerHTML;
 }
 
-function openDashboardModal() {
-    const currentUser = JSON.parse(localStorage.getItem('smartcrop_current_user'));
-    if (!currentUser) return;
 
-    document.getElementById('dashboardModal').classList.add('active');
-    
-    const container = document.getElementById('scanHistoryContainer');
-    let allScans = JSON.parse(localStorage.getItem('smartcrop_disease_scans')) || [];
-    
-    // Filter for current user
-    const userScans = allScans.filter(scan => scan.userEmail === currentUser.email);
-
-    if (userScans.length === 0) {
-        container.innerHTML = '<div style="padding: 30px; text-align: center; background: #f8fafc; border-radius: var(--border-radius-md); color: var(--text-muted);">No scans found. Upload a crop image to see history here.</div>';
-        return;
-    }
-
-    let html = '<div style="display: flex; flex-direction: column; gap: 15px;">';
-    
-    userScans.forEach(scan => {
-        const date = escapeHTML(new Date(scan.timestamp).toLocaleString());
-        
-        // L-03 Fix: Sanitise innerHTML variables
-        const safeDisease = escapeHTML(scan.disease);
-        const safeConfidence = escapeHTML(scan.confidence);
-        const safeTreatment = escapeHTML(scan.treatment);
-        
-        html += `
-            <div style="display: flex; gap: 15px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--border-radius-md); align-items: center;">
-                <img src="${scan.image}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1;" alt="Scan thumbnail">
-                <div style="flex: 1;">
-                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">${date}</div>
-                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 5px;">${safeDisease} <span style="font-size: 0.8rem; font-weight: 400; color: var(--text-muted); margin-left: 10px;">Confidence: ${safeConfidence}</span></div>
-                    <div style="font-size: 0.9rem; color: var(--text-muted);">${safeTreatment}</div>
-                </div>
-            </div>
-        `;
-    });
-    
-    html += '</div>';
-    container.innerHTML = html;
-}
-
-function closeDashboardModal() {
-    document.getElementById('dashboardModal').classList.remove('active');
-}
 
 // ---- Water Quality Logic ----
 function checkWater(type) {
@@ -396,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             userNavContainer.innerHTML = `
-                <a href="#" onclick="openDashboardModal(); return false;" id="dashboard-btn" class="nav-btn" style="color: var(--primary-dark); font-weight: 600; border: 1px solid var(--primary-color);">My Dashboard</a>
+                <a href="dashboard.html" id="dashboard-btn" class="nav-btn" style="color: var(--primary-dark); font-weight: 600; border: 1px solid var(--primary-color);">My Dashboard</a>
                 <span id="welcome-msg" style="color: white; font-weight: 500;">👋 Hi, ${currentUser.name}</span>
                 <a href="#" id="logout-btn" class="nav-btn" style="background-color: #ff4d4d; color: white; border: none; padding: 8px 16px;">Logout</a>
             `;

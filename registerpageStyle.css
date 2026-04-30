@@ -36,7 +36,7 @@ h1, h2, h3, h4 {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, rgba(6, 78, 59, 0.8), rgba(16, 185, 129, 0.7)), url('https://images.unsplash.com/photo-1586771107445-d3ca888129ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover fixed;
+    background: linear-gradient(135deg, rgba(6, 78, 59, 0.7), rgba(16, 185, 129, 0.6)), url('register_bg.png') center/cover fixed;
     padding: 20px;
 }
 

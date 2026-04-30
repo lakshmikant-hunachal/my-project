@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Crop Doctor | Dashboard</title>
+    <!-- PWA Setup -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#059669">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3204/3204121.png">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="translate.css">
+    <style>
+        .dashboard-container {
+            padding: 120px 5% 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: calc(100vh - 100px);
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .dashboard-header h1 {
+            color: var(--primary-dark);
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+        .dashboard-card {
+            background: var(--surface-color);
+            padding: 30px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .scan-history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .profile-stat {
+            background: #f0fdf4;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <header>
+        <div class="logo"><img src="logo.png" alt="Smart Crop Doctor" style="height: 50px; border-radius: 8px;"></div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="index.html#crops">Crops</a>
+            <a href="index.html#diseases">Diseases</a>
+            <a href="index.html#water-quality">Water</a>
+            <div class="nav-translate-wrapper">
+                <span class="language-label">Language:</span>
+                <div id="google_translate_element" class="translate-container"></div>
+            </div>
+            <!-- The JS will inject user info/logout here -->
+        </nav>
+    </header>
+
+    <div class="dashboard-container fade-in">
+        <div class="dashboard-header">
+            <h1><span style="font-size: 2rem;">📊</span> <span id="dashboard-welcome">My Dashboard</span></h1>
+            <button onclick="window.location.href='index.html'" class="login-btn" style="padding: 10px 20px; font-size: 1rem; border-radius: 50px; background-color: var(--primary-color); color: white; border: none; font-weight: 600; cursor: pointer; transition: all 0.3s;">+ New Scan</button>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Profile Info -->
+            <div class="dashboard-card" style="align-self: start;">
+                <h3 style="margin-bottom: 20px; color: var(--primary-dark); font-size: 1.4rem;">👤 Profile Summary</h3>
+                <div id="profile-info">
+                    <p>Loading profile...</p>
+                </div>
+            </div>
+
+            <!-- Scan History -->
+            <div class="dashboard-card">
+                <h3 style="margin-bottom: 20px; color: var(--primary-dark); font-size: 1.4rem;">📷 Scan History</h3>
+                <div id="dashboard-scan-history" class="scan-history-list">
+                    <p>Loading history...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="margin-top: auto;">
+        <p>© 2026 Smart Crop Doctor | Developed by Lakshmikant</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = JSON.parse(localStorage.getItem('smartcrop_current_user'));
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Populate profile
+            document.getElementById('dashboard-welcome').textContent = `Dashboard - ${currentUser.name}`;
+            
+            let allScans = JSON.parse(localStorage.getItem('smartcrop_disease_scans')) || [];
+            const userScans = allScans.filter(scan => scan.userEmail === currentUser.email);
+
+            document.getElementById('profile-info').innerHTML = `
+                <div class="profile-stat">
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">Name</div>
+                    <div style="font-weight: 600; color: var(--text-main); font-size: 1.1rem;">${escapeHTML(currentUser.name)}</div>
+                </div>
+                <div class="profile-stat">
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">Email</div>
+                    <div style="font-weight: 600; color: var(--text-main); font-size: 1.1rem;">${escapeHTML(currentUser.email)}</div>
+                </div>
+                <div class="profile-stat" style="border-left-color: var(--accent);">
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">Total Scans</div>
+                    <div style="font-weight: 600; color: var(--text-main); font-size: 1.1rem;">${userScans.length}</div>
+                </div>
+            `;
+
+            // Populate scan history
+            const container = document.getElementById('dashboard-scan-history');
+
+            if (userScans.length === 0) {
+                container.innerHTML = '<div style="padding: 30px; text-align: center; background: #f8fafc; border-radius: var(--border-radius-md); color: var(--text-muted); border: 2px dashed #e2e8f0;">No scans found. <br><br><a href="index.html" style="color: var(--primary-color); font-weight: 600; text-decoration: none;">Go to Home</a> to upload a crop image.</div>';
+                return;
+            }
+
+            let html = '';
+            userScans.forEach(scan => {
+                const date = escapeHTML(new Date(scan.timestamp).toLocaleString());
+                const safeDisease = escapeHTML(scan.disease);
+                const safeConfidence = escapeHTML(scan.confidence);
+                const safeTreatment = escapeHTML(scan.treatment);
+                
+                html += \`
+                    <div class="fade-in" style="display: flex; gap: 20px; padding: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--border-radius-md); align-items: flex-start; transition: var(--transition);">
+                        <img src="\${scan.image}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px; border: 2px solid #cbd5e1; box-shadow: var(--shadow-sm);" alt="Scan thumbnail">
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <div style="font-weight: 700; color: var(--text-main); font-size: 1.1rem;">\${safeDisease}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted); background: #e2e8f0; padding: 3px 8px; border-radius: 12px;">\${date}</div>
+                            </div>
+                            <div style="font-size: 0.9rem; margin-bottom: 8px;">
+                                <span style="background: #ecfccb; color: #4d7c0f; padding: 3px 8px; border-radius: 12px; font-weight: 600; border: 1px solid #d9f99d;">Confidence: \${safeConfidence}</span>
+                            </div>
+                            <div style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; background: white; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                <strong>Treatment:</strong> \${safeTreatment}
+                            </div>
+                        </div>
+                    </div>
+                \`;
+            });
+            container.innerHTML = html;
+        });
+    </script>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,hi,mr,ta,te,kn,ml,gu,pa,bn,ur',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>
